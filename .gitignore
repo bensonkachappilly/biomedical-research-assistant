@@ -1,3 +1,27 @@
-.env
+# JetBrains IDEs (PyCharm, DataSpell)
+.idea/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables / secrets
+.env
+
+# OS files
+.DS_Store
+
+# Data files (uncomment if your datasets are large and shouldn't be in git)
+# *.csv
+# *.parquet
+EOF
