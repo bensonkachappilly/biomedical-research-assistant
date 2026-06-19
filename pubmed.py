@@ -8,7 +8,15 @@ EMAIL = "benson.kachappilly1@hotmail.com"
 TOOL = "litscout"
 
 def search_pubmed(query, max_results=5):
-    """Return a list of PubMed IDs (PMIDs) matching the query."""
+    """Search PubMed and return matching article IDs.
+
+    Args:
+        query (str): PubMed search query (supports boolean operators and field tags).
+        max_results (int): Maximum number of PMIDs to return. Defaults to 5.
+
+    Returns:
+        list[str]: PubMed IDs (PMIDs) matching the query, up to max_results.
+    """
     resp = requests.get(
         f"{EUTILS}/esearch.fcgi",
         params={"db": "pubmed", "term": query, "retmax": max_results,
@@ -19,7 +27,17 @@ def search_pubmed(query, max_results=5):
     return resp.json()["esearchresult"]["idlist"]
 
 def fetch_abstracts(pmids):
-    """Given PMIDs, return a list of {pmid, title, abstract} dicts."""
+    """Fetch article metadata for a list of PubMed IDs.
+
+    Args:
+        pmids (list[str]): PubMed IDs to fetch. Returns [] immediately if empty.
+
+    Returns:
+        list[dict]: One dict per article with keys:
+            - pmid (str): The PubMed ID.
+            - title (str): Article title, or "(no title)" if absent.
+            - abstract (str): Full abstract text, or "(no abstract)" if absent.
+    """
     if not pmids:
         return []
     resp = requests.get(
@@ -40,7 +58,18 @@ def fetch_abstracts(pmids):
     return articles
 
 def get_sources(query, max_results=5):
-    """Search + fetch in one step."""
+    """Search PubMed and return article metadata in one call.
+
+    Combines search_pubmed and fetch_abstracts with a short delay between
+    requests to respect NCBI rate limits.
+
+    Args:
+        query (str): PubMed search query.
+        max_results (int): Maximum number of articles to return. Defaults to 5.
+
+    Returns:
+        list[dict]: Article metadata dicts (see fetch_abstracts for structure).
+    """
     pmids = search_pubmed(query, max_results=max_results)
     time.sleep(0.4)   # be polite to NCBI's servers
     return fetch_abstracts(pmids)
