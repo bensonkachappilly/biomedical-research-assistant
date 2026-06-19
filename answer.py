@@ -7,13 +7,38 @@ load_dotenv()
 client = anthropic.Anthropic()
 
 def build_context(sources):
-    """Number each source so Claude can cite it as [1], [2], ..."""
+    """Format article metadata into a numbered context block for the prompt.
+
+    Args:
+        sources (list[dict]): Article dicts with keys pmid, title, and abstract
+            (as returned by get_sources).
+
+    Returns:
+        str: Newline-separated numbered entries in the form
+            "[N] PMID <pmid> — <title>\\n<abstract>", ready to embed in a prompt.
+    """
     return "\n\n".join(
         f"[{i}] PMID {s['pmid']} — {s['title']}\n{s['abstract']}"
         for i, s in enumerate(sources, start=1)
     )
 
 def answer_question(question, max_results=5):
+    """Answer a biomedical question using PubMed abstracts as grounding.
+
+    Retrieves relevant PubMed articles for the question, then prompts Claude
+    to answer using only those abstracts with inline citations.
+
+    Args:
+        question (str): The biomedical question to answer.
+        max_results (int): Number of PubMed articles to retrieve. Defaults to 5.
+
+    Returns:
+        tuple[str, list[dict]]:
+            - answer (str): Claude's response with inline citations, or a message
+              indicating no results were found.
+            - sources (list[dict]): The article dicts used to ground the answer
+              (empty list if no results).
+    """
     sources = get_sources(question, max_results=max_results)
     if not sources:
         return "No PubMed results found.", []
