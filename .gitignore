@@ -24,4 +24,5 @@ env/
 # Data files (uncomment if your datasets are large and shouldn't be in git)
 # *.csv
 # *.parquet
-EOFtraces/
+traces/
+eval_reports/
