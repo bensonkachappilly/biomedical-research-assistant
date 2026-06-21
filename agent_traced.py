@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import anthropic
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from core import check_citations, extract_pmids, CITATION_RE
 
 load_dotenv()
 client = anthropic.Anthropic()
@@ -21,7 +22,6 @@ SYSTEM = (
     "Cite every claim with the source's PubMed ID like [PMID: 12345678]. "
     "If the evidence is insufficient or mixed, say so plainly rather than guessing."
 )
-CITATION_RE = re.compile(r"\[PMID:?\s*(\d+)\]")
 
 # ---------- GUARDRAIL 1: stay in scope ----------
 def in_scope(question):
@@ -42,28 +42,6 @@ def in_scope(question):
         messages=[{"role": "user", "content": question}],
     )
     return "".join(b.text for b in resp.content if b.type == "text").strip().lower().startswith("y")
-
-# ---------- GUARDRAIL 2: no hallucinated citations ----------
-def check_citations(answer, valid_pmids):
-    """Verify that every PMID cited in the answer was actually retrieved.
-
-    Args:
-        answer (str): Claude's answer text, potentially containing [PMID: ...] citations.
-        valid_pmids (Iterable[str]): PMIDs that were retrieved during the search loop.
-
-    Returns:
-        tuple[str, str]:
-            - status (str): One of "answered", "answered_no_citations", or
-              "blocked_hallucinated_citation".
-            - reason (str): Human-readable explanation of the status.
-    """
-    cited = set(CITATION_RE.findall(answer))
-    hallucinated = cited - set(valid_pmids)
-    if hallucinated:
-        return "blocked_hallucinated_citation", f"cited PMIDs never retrieved: {hallucinated}"
-    if not cited:
-        return "answered_no_citations", "no citations (may be a valid abstention)"
-    return "answered", "ok"
 
 # ---------- OBSERVABILITY: record every step ----------
 class Trace:
