@@ -1,4 +1,3 @@
-![CI](https://github.com/bensonkachappilly/biomedical-research-assistant/actions/workflows/ci.yml/badge.svg)
 # 🔬 BioScout — Agentic Biomedical Research Assistant
  
 [![CI](https://github.com/bensonkachappilly/biomedical-research-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/bensonkachappilly/biomedical-research-assistant/actions/workflows/ci.yml)
