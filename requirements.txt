@@ -2,4 +2,5 @@ anthropic
 requests
 python-dotenv
 mcp[cli]
-pyteststreamlit
+pytest
+streamlit
