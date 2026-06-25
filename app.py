@@ -31,6 +31,18 @@ if "question" not in st.session_state:
     st.session_state.question = ""
 
 def use_example(text):
+    """
+    Set the search input to a pre-written example question.
+
+    Used as a Streamlit button callback so that clicking an example prompt
+    populates the question text input without requiring the user to type.
+
+    Args:
+        text (str): The example question to load into the session state.
+
+    Returns:
+        None
+    """
     st.session_state.question = text
 
 # ---------- sidebar ----------
@@ -78,6 +90,25 @@ search = st.button("Search PubMed", type="primary", use_container_width=True)
 
 # ---------- results ----------
 def render(result):
+    """
+    Render the answer and sources returned by `answer_question` into the Streamlit UI.
+
+    Displays a coloured status pill followed by the model's answer in a bordered
+    container. If the query was out of scope or returned no PubMed results, a warning
+    pill and an info banner are shown instead. For successful responses, each source is
+    rendered as a bordered card with a clickable PubMed link.
+
+    Args:
+        result (dict): The result dict produced by `answer_question`, containing:
+            - status (str): One of ``"ok"``, ``"refused_scope"``, ``"no_results"``,
+              ``"blocked_hallucinated_citation"``, or ``"uncited_claims"``.
+            - answer (str): The model's answer or an explanatory fallback message.
+            - sources (list[dict]): PubMed source dicts, each with ``"pmid"`` and
+              ``"title"`` keys.
+
+    Returns:
+        None
+    """
     status = result["status"]
     if status in ("refused_scope", "no_results"):
         st.markdown('<span class="pill pill-warn">Out of scope</span>'
