@@ -16,17 +16,17 @@ BioScout is an AI agent for evidence-based biomedical questions. Ask it somethin
  
 It is built as a small but complete, production-minded system: a real agent loop, a reusable tool exposed over the Model Context Protocol (MCP), guardrails against hallucinated citations, observability traces, an automated evaluation suite, CI on every push, and a containerised deployment.
  
-<!-- Add a screenshot of the Streamlit app here, e.g.:
-![BioScout web UI](docs/screenshot.png)
--->
+
+![BioScout web UI](docs/bioscout.png)
+
  
 ## Demo: the MCP server inside Claude Code
  
 The PubMed tool is packaged as an MCP server, so it works in any MCP client — not just the web app. Below, Claude Code calls the `search_pubmed` tool directly and synthesises a cited literature summary:
  
-<!-- Add the Claude Code screenshot here, e.g.:
+
 ![BioScout running as an MCP tool in Claude Code](docs/claude-code-demo.png)
--->
+
  
 ## Key features
  
@@ -77,18 +77,22 @@ flowchart TD
  
 ```
 .
-├── pubmed.py          # PubMed E-utilities search + abstract retrieval
-├── core.py            # Pure, testable logic (citation guardrails)
-├── pubmed_server.py   # MCP server exposing search_pubmed
-├── agent_mcp.py       # Agent loop that consumes the MCP server
-├── agent_traced.py    # Agent + guardrails + observability traces
-├── web_backend.py     # Synchronous answer function for the web app
-├── app.py             # Streamlit UI
-├── evals.py           # Evaluation suite with scored thresholds
-├── test_bioscout.py   # Unit tests (run in CI)
-├── Dockerfile         # Containerised deployment
+├── pubmed.py             # PubMed E-utilities search + abstract retrieval
+├── core.py               # Pure, testable logic (citation guardrails)
+├── pubmed_server.py      # MCP server exposing search_pubmed
+├── agent_mcp.py          # Agent loop that consumes the MCP server
+├── agent_traced.py       # Agent + guardrails + observability traces
+├── web_backend.py        # Synchronous answer function for the web app
+├── app.py                # Streamlit UI
+├── evals.py              # Evaluation suite with scored thresholds
+├── test_bioscout.py      # Unit tests (run in CI)
+├── Dockerfile            # Containerised deployment
 ├── requirements.txt
-└── .github/workflows/ci.yml
+├── .streamlit/
+│   └── config.toml       # Streamlit theme
+├── docs/                 # Screenshots used in this README
+└── .github/workflows/
+    └── ci.yml            # GitHub Actions CI
 ```
  
 ## Run it locally
